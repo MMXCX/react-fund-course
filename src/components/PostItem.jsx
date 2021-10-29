@@ -1,6 +1,7 @@
 import React from 'react';
 
 const PostItem = (props) => {
+    const deleteThisLine = 5;
     return (
         <div className="post">
             <div className="post__content">
