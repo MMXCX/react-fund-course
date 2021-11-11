@@ -22,7 +22,7 @@ function App() {
     const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
 
 
-//1:43:34
+//1:54:16
     useEffect(() => {
         fetchPosts().then(() => {
         })
