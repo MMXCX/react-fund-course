@@ -14,15 +14,20 @@ function App() {
     const [posts, setPosts] = useState([]);
     const [filter, setFilter] = useState({sort: '', query: ''})
     const [modal, setModal] = useState(false)
+    const [totalCount, setTotalCount] = useState(0)
+    const [limit, setLimit] = useState(10)
+    const [page, setPage] = useState(1)
     const [fetchPosts, isPostsLoading, postError] = useFetching(async () => {
-        const posts = await PostService.getAll()
-        setPosts(posts)
+        const response = await PostService.getAll(limit, page)
+        setPosts(response.data)
+        // console.log(response)
+        setTotalCount(parseInt(response.headers['x-total-count']))
     })
 
     const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
 
 
-//1:54:16
+//1:58:36
     useEffect(() => {
         fetchPosts().then(() => {
         })
@@ -53,7 +58,7 @@ function App() {
                 />
             </div>
             {postError &&
-            <h1>Error: ${postError}</h1>
+            <h1>Error: {postError}</h1>
             }
             {isPostsLoading
                 ? <div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}>
