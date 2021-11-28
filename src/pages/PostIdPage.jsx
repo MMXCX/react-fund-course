@@ -32,8 +32,8 @@ const PostIdPage = () => {
             <h1>Comments:</h1>
             {isComLoading
                 ? <Loader/>
-                : comments.map((com, key) =>
-                    <div key={key} style={{marginTop: 25}}>
+                : comments.map(com =>
+                    <div key={com.id} style={{marginTop: 25}}>
                         <ul>
                             <li><h4>E-mail - {com.email}</h4></li>
                             <li>Name - {com.name}</li>

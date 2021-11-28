@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {usePosts} from "../hooks/usePosts";
 import {useFetching} from "../hooks/useFetching";
 import PostService from "../API/PostService";
@@ -19,18 +19,25 @@ const Posts = () => {
     const [limit, setLimit] = useState(10)
     const [page, setPage] = useState(1)
     const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
+    const lastElement = useRef()
+
+    console.log(lastElement)
 
     const [fetchPosts, isPostsLoading, postError] = useFetching(async (limit, page) => {
         const response = await PostService.getAll(limit, page)
-        setPosts(response.data)
+        setPosts([...posts, ...response.data])
         const totalCount = response.headers['x-total-count']
         setTotalPages(getPageCount(totalCount, limit))
     })
 
     useEffect(() => {
+
+    })
+
+    useEffect(() => {
         fetchPosts(limit, page).then(() => {
         })
-    }, [])
+    }, [page])
 
     const createPost = (newPost) => {
         setPosts([...posts, newPost]);
@@ -43,8 +50,6 @@ const Posts = () => {
 
     const changePage = (page) => {
         setPage(page)
-        fetchPosts(limit, page).then(() => {
-        })
     }
 
     return (
@@ -70,9 +75,10 @@ const Posts = () => {
                 page={page}
                 changePage={changePage}
             />
-            {isPostsLoading
-                ? <div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}><Loader/></div>
-                : <PostList posts={sortedAndSearchedPosts} title={"Post list."} remove={removePost}/>
+            <PostList posts={sortedAndSearchedPosts} title={"Post list."} remove={removePost}/>
+            <div ref={lastElement} style={{height: 20, background: 'red'}}></div>
+            {isPostsLoading &&
+                <div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}><Loader/></div>
             }
             <Pagination
                 totalPages={totalPages}
