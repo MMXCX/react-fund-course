@@ -10,6 +10,7 @@ import PostFilter from "../components/PostFilter";
 import Pagination from "../components/UI/pagination/Pagination";
 import Loader from "../components/UI/Loader/Loader";
 import PostList from "../components/PostList";
+import {useObserver} from "../hooks/useObserver";
 
 const Posts = () => {
     const [posts, setPosts] = useState([]);
@@ -20,8 +21,7 @@ const Posts = () => {
     const [page, setPage] = useState(1)
     const sortedAndSearchedPosts = usePosts(posts, filter.sort, filter.query)
     const lastElement = useRef()
-
-    console.log(lastElement)
+    const observer = useRef()
 
     const [fetchPosts, isPostsLoading, postError] = useFetching(async (limit, page) => {
         const response = await PostService.getAll(limit, page)
@@ -30,8 +30,8 @@ const Posts = () => {
         setTotalPages(getPageCount(totalCount, limit))
     })
 
-    useEffect(() => {
-
+    useObserver(lastElement, page < totalPages, isPostsLoading, () => {
+        setPage(page + 1)
     })
 
     useEffect(() => {
@@ -78,7 +78,7 @@ const Posts = () => {
             <PostList posts={sortedAndSearchedPosts} title={"Post list."} remove={removePost}/>
             <div ref={lastElement} style={{height: 20, background: 'red'}}></div>
             {isPostsLoading &&
-                <div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}><Loader/></div>
+            <div style={{display: 'flex', justifyContent: 'center', marginTop: 50}}><Loader/></div>
             }
             <Pagination
                 totalPages={totalPages}
